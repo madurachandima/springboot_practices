@@ -19,5 +19,5 @@ public interface LocationService {
     void deleteLocationById(int id);
     
 
-
+   
 }
