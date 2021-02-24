@@ -2,6 +2,7 @@ package com.madura.location.locationweb.controller;
 
 import com.madura.location.locationweb.entities.Location;
 import com.madura.location.locationweb.service.LocationService;
+import com.madura.location.locationweb.utill.EmailUtill;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -18,27 +19,37 @@ public class LocationController {
     @Autowired
     LocationService service;
 
-    @RequestMapping("/showCreate")
+    @Autowired
+    EmailUtill emailUtill;
+
+    @RequestMapping("showCreate")
     public String showCreate() {
         return "createLocation";
     }
 
-    @RequestMapping("/saveLoc")
+    @RequestMapping("saveLoc")
     public String saveLocation(@ModelAttribute("location") Location location, ModelMap modelMap) {
-        Location loc = service.saveLocation(location);
-        String responseMsg = "Location saved with Name : " + loc.getName();
-        modelMap.put("saveResponse", responseMsg);
+        try {
+            emailUtill.sendEmail("madurachandima6@gmail.com", "This is test email", "spring boot test email");
+            Location loc = service.saveLocation(location);
+            String responseMsg = "Location saved with Name : " + loc.getName();
+            modelMap.put("saveResponse", responseMsg);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        // emailUtill.sendEmail("madurachandima6@gmail.com","This is test email","spring boot test email");
+
         return "createLocation";
     }
 
-    @RequestMapping("/displayLocations")
+    @RequestMapping("displayLocations")
     public String displayAllLocation(ModelMap modelMap) {
         List<Location> locations = service.getAllLocation();
         modelMap.addAttribute("Locations", locations);
         return "displayLocations";
     }
 
-    @RequestMapping("/deleteLocation")
+    @RequestMapping("deleteLocation")
     public String deleteLocation(@RequestParam("id") int id, ModelMap modelMap) {
         service.deleteLocationById(id);
         List<Location> locations = service.getAllLocation();
@@ -54,7 +65,7 @@ public class LocationController {
         return "updateLocation";
     }
 
-    @RequestMapping("/updateLoc")
+    @RequestMapping("updateLoc")
     public String updateLocations(@ModelAttribute("location") Location location, ModelMap modelMap) {
         service.updateLocation(location);
         List<Location> locations = service.getAllLocation();

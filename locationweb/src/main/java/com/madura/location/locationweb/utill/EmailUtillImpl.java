@@ -11,11 +11,9 @@ import javax.mail.internet.MimeMessage;
 @Component
 public class EmailUtillImpl implements EmailUtill {
 
-
     @Autowired
     JavaMailSender sender;
 
-    
     @Override
     public void sendEmail(String toAddress, String subject, String body) {
         MimeMessage message = sender.createMimeMessage();
@@ -27,6 +25,5 @@ public class EmailUtillImpl implements EmailUtill {
         } catch (MessagingException e) {
             e.printStackTrace();
         }
-
     }
 }
