@@ -1,8 +1,10 @@
 package com.madura.location.locationweb.controller;
 
 import com.madura.location.locationweb.entities.Location;
+import com.madura.location.locationweb.repos.LocationRepository;
 import com.madura.location.locationweb.service.LocationService;
 import com.madura.location.locationweb.utill.EmailUtill;
+import com.madura.location.locationweb.utill.ReportUtill;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -10,6 +12,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import javax.servlet.ServletContext;
 import java.util.List;
 
 @Controller
@@ -21,12 +24,21 @@ public class LocationController {
     @Autowired
     EmailUtill emailUtill;
 
-    @RequestMapping("showCreate")
+    @Autowired
+    LocationRepository repository;
+
+    @Autowired
+    ReportUtill reportUtill;
+
+    @Autowired
+    ServletContext servletContext;
+
+    @RequestMapping("/showCreate")
     public String showCreate() {
         return "createLocation";
     }
 
-    @RequestMapping("saveLoc")
+    @RequestMapping("/saveLoc")
     public String saveLocation(@ModelAttribute("location") Location location, ModelMap modelMap) {
         try {
             emailUtill.sendEmail("madurachandima6@gmail.com", "This is test email", "spring boot test email");
@@ -37,18 +49,17 @@ public class LocationController {
             e.printStackTrace();
         }
         // emailUtill.sendEmail("madurachandima6@gmail.com","This is test email","spring boot test email");
-
         return "createLocation";
     }
 
-    @RequestMapping("displayLocations")
+    @RequestMapping("/displayLocations")
     public String displayAllLocation(ModelMap modelMap) {
         List<Location> locations = service.getAllLocation();
         modelMap.addAttribute("Locations", locations);
         return "displayLocations";
     }
 
-    @RequestMapping("deleteLocation")
+    @RequestMapping("/deleteLocation")
     public String deleteLocation(@RequestParam("id") int id, ModelMap modelMap) {
         service.deleteLocationById(id);
         List<Location> locations = service.getAllLocation();
@@ -57,18 +68,28 @@ public class LocationController {
         return "displayLocations";
     }
 
-    @RequestMapping("updateLocation")
+    @RequestMapping("/updateLocation")
     public String showUpdateLocation(@RequestParam("id") int id, ModelMap modelMap) {
         Location location = service.getLocationById(id).get();
         modelMap.addAttribute("location", location);
         return "updateLocation";
     }
 
-    @RequestMapping("updateLoc")
+    @RequestMapping("/updateLoc")
     public String updateLocations(@ModelAttribute("location") Location location, ModelMap modelMap) {
         service.updateLocation(location);
         List<Location> locations = service.getAllLocation();
         modelMap.addAttribute("location", locations);
         return "displayLocations";
+    }
+
+    @RequestMapping("/generateReport")
+    public String generateReport() {
+        String path = servletContext.getRealPath("/");
+        System.out.println("Real Path : "+path);
+//        System.out.println("Real Path : "+servletContext.getRealPath("/"));
+        List<Object[]> data = repository.findTypeAndTypeCount();
+        reportUtill.generatePieChart(path, data);
+        return "report";
     }
 }
