@@ -7,9 +7,7 @@ import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
 
-
 public interface LocationRepository extends JpaRepository<Location, Integer> {
-
     @Query(value = "SELECT type,COUNT(type) FROM location GROUP BY type", nativeQuery = true)
     List<Object[]> findTypeAndTypeCount();
 }
