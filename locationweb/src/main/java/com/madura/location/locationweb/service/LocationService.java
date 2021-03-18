@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface LocationService {
+
     Location saveLocation(Location location);
 
     Location updateLocation(Location location);
@@ -17,7 +18,6 @@ public interface LocationService {
     List<Location> getAllLocation();
 
     void deleteLocationById(int id);
-    
 
-   
+
 }
